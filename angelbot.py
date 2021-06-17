@@ -93,7 +93,6 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("Send", send_command))
     dispatcher.add_handler(CommandHandler("text_angel", set_texting_angel))
     dispatcher.add_handler(CommandHandler("text_mortal", set_texting_mortal))
 
