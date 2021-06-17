@@ -1,0 +1,7 @@
+HELP = f'Placeholder text'
+NOT_INITIALIZED = f'Sorry! But it looks like you are not in this round of angel-mortal! If this is a mistake please contact the admin with @HananChoong or @hansebeast'
+SET_MESSAGING_ANGEL = f'You are now chatting with your Angel!'
+SET_MESSAGING_MORTAL = f'You are now chatting with your Mortal!'
+BOT_NOT_STARTED = f'The player you are trying to chat with has not started this bot'
+ALREADY_TEXTING_MORTAL = f'You are already chatting with your Mortal!'
+ALREADY_TEXTING_ANGEL = f'You are already chatting with your Angel!'
