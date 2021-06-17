@@ -1,1 +1,1 @@
-# AngelMortalBot
+# angel-mortal-bot
