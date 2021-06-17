@@ -48,8 +48,8 @@ def start(update: Update, context: CallbackContext) -> None:
 	updatePlayerProfile(user.id, user.username)
 
 	update.message.reply_markdown_v2(
-			fr'Hi {user.mention_markdown_v2()}\!',
-			reply_markup=ForceReply(selective=True),
+		fr'Hi {user.mention_markdown_v2()}\!',
+		reply_markup=ForceReply(selective=True),
 	)
 
 
