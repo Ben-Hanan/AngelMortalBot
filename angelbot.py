@@ -2,17 +2,6 @@
 # pylint: disable=C0116,W0613
 # This program is dedicated to the public domain under the CC0 license.
 
-"""
-Simple Bot to reply to Telegram messages.
-First, a few handler functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-Usage:
-Basic Echobot example, repeats messages.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
-
 import logging
 
 from config import ANGEL_BOT_TOKEN
@@ -33,6 +22,9 @@ logger = logging.getLogger(__name__)
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
+    
+    print(user.id, user.username)
+
     update.message.reply_markdown_v2(
         fr'Hi {user.mention_markdown_v2()}\!',
         reply_markup=ForceReply(selective=True),
@@ -43,16 +35,22 @@ def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
-
+"""
 def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
+    update.message.reply_text(update.message.text)
+"""
+
+def forward_message(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(update.message.text)
 
+def send_command(update: Update, context: CallbackContext):
+    context.bot.send_message(
+        text = "Hello World!",
+        chat_id = 131189243 
+    )
 
 def main() -> None:
-    """Start the bot."""
-    # Create the Updater and pass it your bot's token.
-    updater = Updater(os.environ.get("ANGEL_BOT_TOKEN"))
+    updater = Updater(ANGEL_BOT_TOKEN)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -60,9 +58,10 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("Send", send_command))
 
     # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, forward_message))
 
     # Start the Bot
     updater.start_polling()
