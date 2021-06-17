@@ -2,7 +2,7 @@ import logging
 import messages
 import player
 
-from config import ANGEL_BOT_TOKEN, PLAYERS_FILENAME
+from config import ANGEL_BOT_TOKEN, PLAYERS_FILENAME, APP_NAME, PORT
 
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
@@ -99,8 +99,14 @@ def main() -> None:
     # on non command i.e message - send the message on Telegram to the user
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, forward_message))
 
-    # Start the Bot
-    updater.start_polling()
+    # Start the Bot for local dev
+    # updater.start_polling()
+
+    # Start the Bot on web host
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=ANGEL_BOT_TOKEN)
+    updater.bot.set_webhook(APP_NAME + ANGEL_BOT_TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
