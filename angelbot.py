@@ -2,10 +2,10 @@ import logging
 import messages
 import player
 
-from config import ANGEL_BOT_TOKEN, PLAYERS_FILENAME, APP_NAME, PORT
+from config import ANGEL_BOT_TOKEN, PLAYERS_FILENAME
 
-from telegram import Update, ForceReply
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler, CallbackQueryHandler
 
 # Enable logging
 logging.basicConfig(
@@ -59,30 +59,73 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 def forward_message(update: Update, context: CallbackContext) -> None:
     """Send a message to either the Angel or Mortal depending on the mode set"""
-    if players[players[curr_user].angel].chat_id is None:
-        update.message.reply_text(messages.BOT_NOT_STARTED)
-        return ConversationHandler.END
-    update.message.reply_text(update.message.text)
-
-def set_texting_angel(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     curr_user = user.username
 
-    if (players[curr_user].is_texting_angel is True):
+    if players[curr_user].is_recipient_angel is None:
+        update.message.reply_text(messages.CHOOSE_RECIPIENT)
+
+    if players[curr_user].is_recipient_angel is True:
+        angel_chat_id = players[players[curr_user].angel].chat_id
+        if angel_chat_id is None:
+            update.message.reply_text(messages.BOT_NOT_STARTED)
+        else:
+            context.bot.send_message(
+                text='From your mortal: ' + update.message.text,
+                chat_id=angel_chat_id
+            )
+    
+    if players[curr_user].is_recipient_angel is False:
+        mortal_chat_id = players[players[curr_user].mortal].chat_id
+        if mortal_chat_id is None:
+            update.message.reply_text(messages.BOT_NOT_STARTED)
+        else:
+            context.bot.send_message(
+                text='From your angel: ' + update.message.text,
+                chat_id=mortal_chat_id
+            )
+    update.message.reply_text('sent message')
+
+def set_recipient_angel(update: Update, context: CallbackContext) -> None:
+    user = update.effective_user
+    curr_user = user.username
+
+    if (players[curr_user].is_recipient_angel is True):
         update.message.reply_text(messages.ALREADY_TEXTING_ANGEL)
     else:
-        players[curr_user].is_texting_angel = True
+        players[curr_user].is_recipient_angel = True
         update.message.reply_text(messages.SET_TEXTING_ANGEL)
+        context.bot.answerCallbackQuery(
+            callback_query_id=update.callback_query.id, 
+            text="You are now chatting with your Angel " + '\U0001F47C\U0001F3FC'
+        )
 
-def set_texting_mortal(update: Update, context: CallbackContext) -> None:
+def set_recipient_mortal(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     curr_user = user.username
 
-    if (players[curr_user].is_texting_angel is False):
+    if (players[curr_user].is_recipient_angel is False):
         update.message.reply_text(messages.ALREADY_TEXTING_MORTAL)
     else:
-        players[curr_user].is_texting_angel = False
+        players[curr_user].is_recipient_angel = False
         update.message.reply_text(messages.SET_TEXTING_MORTAL)
+        context.bot.answerCallbackQuery(
+            callback_query_id=update.callback_query.id, 
+            text="You are now chatting with your Mortal " + '\U0001F467\U0001F3FC ' + '\U0001F466\U0001F3FC'
+        )
+
+
+def set_message_recipient(update: Update, context: CallbackContext) -> None:
+    keyboard = [
+        [
+            InlineKeyboardButton("Angel", callback_data='angel'),
+            InlineKeyboardButton("Mortal", callback_data='mortal'),
+        ],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text('Choose who to chat with', reply_markup=reply_markup)
 
 def main() -> None:
     updater = Updater(ANGEL_BOT_TOKEN)
@@ -93,22 +136,17 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("text_angel", set_texting_angel))
-    dispatcher.add_handler(CommandHandler("text_mortal", set_texting_mortal))
+
+    dispatcher.add_handler(CommandHandler("setrecipient", set_message_recipient))
+    dispatcher.add_handler(CallbackQueryHandler(set_recipient_angel, pattern='angel'))
+    dispatcher.add_handler(CallbackQueryHandler(set_recipient_mortal, pattern='mortal'))
+
 
     # on non command i.e message - send the message on Telegram to the user
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, forward_message))
 
-    # Start the Bot for local dev
-    # updater.start_polling()
-
-    # Start the Bot on web host
-    """
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=ANGEL_BOT_TOKEN,
-                          webhook_url="https://" + APP_NAME + ".herokuapp.com/" + ANGEL_BOT_TOKEN)
-    """
+    # Start the Bot
+    updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

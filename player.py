@@ -6,7 +6,7 @@ class Player():
 		self.angel = angel
 		self.mortal = mortal
 		self.chat_id = chat_id
-		self.is_texting_angel = None
+		self.is_recipient_angel = None
 	
 def initialize_players(players_obj):
 	players_file = open(PLAYERS_FILENAME, "r")	
