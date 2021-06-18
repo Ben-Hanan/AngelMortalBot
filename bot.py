@@ -1,8 +1,9 @@
 import logging
 import messages
 import player
+from collections import defaultdict
 
-from config import ANGEL_BOT_TOKEN, PLAYERS_FILENAME
+from config import BOT_TOKEN, PLAYERS_FILENAME, HOST, PORT, APP_NAME
 
 from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler, CallbackQueryHandler
@@ -13,7 +14,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-players = {}
+players = defaultdict(player.Player)
 player.initialize_players(players)
 
 # Helper function for debugging purposes
@@ -142,7 +143,7 @@ def set_message_recipient(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Choose who to chat with!', reply_markup=reply_markup)
 
 def main() -> None:
-    updater = Updater(ANGEL_BOT_TOKEN)
+    updater = Updater(BOT_TOKEN)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
@@ -159,16 +160,16 @@ def main() -> None:
     # on non command i.e message - send the message on Telegram to the user
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, forward_message))
 
-    # Start the Bot
-    updater.start_polling()
 
-    # Start the Bot on web host
-    """
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=ANGEL_BOT_TOKEN,
-                          webhook_url="https://" + APP_NAME + ".herokuapp.com/" + ANGEL_BOT_TOKEN)
-    """
+    if HOST == "local":
+        # Start the Bot
+        updater.start_polling()
+    elif HOST == "heroku":
+        # Start the Bot on web host
+        updater.start_webhook(listen="0.0.0.0",
+                            port=PORT,
+                            url_path=BOT_TOKEN,
+                            webhook_url="https://" + APP_NAME + ".herokuapp.com/" + BOT_TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

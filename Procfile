@@ -1,1 +1,1 @@
-web: python3 angelbot.py
+web: python3 bot.py

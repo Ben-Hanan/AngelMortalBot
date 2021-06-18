@@ -1,11 +1,11 @@
 from config import PLAYERS_FILENAME
 
 class Player():
-	def __init__(self, username, angel, mortal, chat_id):
-		self.username = username
-		self.angel = angel
-		self.mortal = mortal
-		self.chat_id = chat_id
+	def __init__(self):
+		self.username = None
+		self.angel = None
+		self.mortal = None
+		self.chat_id = None
 		self.is_recipient_angel = None
 	
 def initialize_players(players_obj):
@@ -18,10 +18,14 @@ def initialize_players(players_obj):
 		angel = data[1].strip().lower()
 		mortal = data[2].strip().lower()
 
+		players_obj[username].username = username
+		players_obj[username].angel = angel
+		players_obj[username].mortal = mortal
+
 		try:
 			# If chat_id is already stored on the .txt file, add it to the player profile
 			chat_id = data[3].strip().lower()
-			players_obj[username] = Player(username, angel, mortal, chat_id)
+			players_obj[username].chat_id = chat_id
 
 		except:
-			players_obj[username] = Player(username, angel, mortal, None)
+			print("No chat ID found from for {username} from txt file")
