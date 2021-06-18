@@ -18,8 +18,8 @@ def initialize_players(players_obj):
 		chat_id = line["chat_id"]
 
 		players_obj[username].username = username
-		players_obj[username].angel = angel
-		players_obj[username].mortal = mortal
+		players_obj[username].angel = players_obj[angel]
+		players_obj[username].mortal = players_obj[mortal]
 
 		if chat_id:
 			players_obj[username].chat_id = chat_id
