@@ -40,7 +40,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
-	mortal = players[user.username].mortal
+	mortal = players[user.username.lower()].mortal
 
 	if mortal is None:
 		update.message.reply_text(messages.MORTAL_NOT_FOUND)
@@ -56,13 +56,15 @@ def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 		update.message.reply_text('Your mortal is...', reply_markup=reply_markup)        
 
 def reveal_mortal(update: Update, context: CallbackContext):
-	user = update.effective_user
-	mortal = players[user.username].mortal
+    user = update.effective_user
+    mortal = players[user.username.lower()].mortal
 
-	context.bot.answerCallbackQuery(
-		callback_query_id=update.callback_query.id, 
-		text=messages.format_mortal_reveal(mortal),
-	)
+    context.bot.answerCallbackQuery(
+        callback_query_id=update.callback_query.id, 
+        text=messages.format_mortal_reveal(mortal),
+    )
+
+    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal))
 
 #TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -79,7 +81,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 		if players[curr_user].is_recipient_angel is True:
 			angel_chat_id = players[curr_user].angel.chat_id
 			if angel_chat_id is None:
-				update.callback_query.message.edit_text(messages.BOT_NOT_STARTED)
+				update.message.reply_text(messages.BOT_NOT_STARTED)
 				return
 			else:
 				context.bot.send_message(
@@ -90,7 +92,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 		if players[curr_user].is_recipient_angel is False:
 			mortal_chat_id = players[curr_user].mortal.chat_id
 			if mortal_chat_id is None:
-				update.callback_query.message.edit_text(messages.BOT_NOT_STARTED)
+				update.message.reply_text(messages.BOT_NOT_STARTED)
 				return
 			else:
 				context.bot.send_message(
