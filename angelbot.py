@@ -43,6 +43,7 @@ def updatePlayerProfile(input_user_id, input_username) -> None:
 	players_file.writelines(players)
 	players_file.close()
 
+# TODO: Update welcome message
 def start(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
     
@@ -53,66 +54,79 @@ def start(update: Update, context: CallbackContext) -> None:
 		reply_markup=ForceReply(selective=True),
 	)
 
-
+#TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 def forward_message(update: Update, context: CallbackContext) -> None:
     """Send a message to either the Angel or Mortal depending on the mode set"""
     user = update.effective_user
-    curr_user = user.username
+    curr_user = user.username.lower()
 
     if players[curr_user].is_recipient_angel is None:
         update.message.reply_text(messages.CHOOSE_RECIPIENT)
-
-    if players[curr_user].is_recipient_angel is True:
-        angel_chat_id = players[players[curr_user].angel].chat_id
-        if angel_chat_id is None:
-            update.message.reply_text(messages.BOT_NOT_STARTED)
-        else:
-            context.bot.send_message(
-                text='From your mortal: ' + update.message.text,
-                chat_id=angel_chat_id
-            )
-    
-    if players[curr_user].is_recipient_angel is False:
-        mortal_chat_id = players[players[curr_user].mortal].chat_id
-        if mortal_chat_id is None:
-            update.message.reply_text(messages.BOT_NOT_STARTED)
-        else:
-            context.bot.send_message(
-                text='From your angel: ' + update.message.text,
-                chat_id=mortal_chat_id
-            )
-    update.message.reply_text('sent message')
+    else:
+        if players[curr_user].is_recipient_angel is True:
+            angel_chat_id = players[players[curr_user].angel].chat_id
+            if angel_chat_id is None:
+                update.message.reply_text(messages.BOT_NOT_STARTED)
+                return
+            else:
+                context.bot.send_message(
+                    text='From your mortal:\n' + update.message.text,
+                    chat_id=angel_chat_id
+                )
+        
+        if players[curr_user].is_recipient_angel is False:
+            mortal_chat_id = players[players[curr_user].mortal].chat_id
+            if mortal_chat_id is None:
+                update.message.reply_text(messages.BOT_NOT_STARTED)
+                return
+            else:
+                context.bot.send_message(
+                    text='From your angel:\n' + update.message.text,
+                    chat_id=mortal_chat_id
+                )
+        # TODO: remove as this is for testing
+        update.message.reply_text('sent message')
 
 def set_recipient_angel(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
-    curr_user = user.username
+    curr_user = user.username.lower()
 
     if (players[curr_user].is_recipient_angel is True):
         update.message.reply_text(messages.ALREADY_TEXTING_ANGEL)
     else:
         players[curr_user].is_recipient_angel = True
-        update.message.reply_text(messages.SET_TEXTING_ANGEL)
         context.bot.answerCallbackQuery(
             callback_query_id=update.callback_query.id, 
-            text="You are now chatting with your Angel " + '\U0001F47C\U0001F3FC'
+            text='\U0001F47C\U0001F3FC'+ " You are now chatting with your Angel " + '\U0001F47C\U0001F3FC',
+            show_alert=True
         )
+        pin_message_id = update.callback_query.message.edit_text(
+                text='\U0001F47C\U0001F3FC' + " You are now chatting with your Angel " + '\U0001F47C\U0001F3FC'
+            ).message_id
+        context.bot.unpinAllChatMessages(user.id)
+        context.bot.pinChatMessage(user.id, pin_message_id)
 
 def set_recipient_mortal(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
-    curr_user = user.username
+    curr_user = user.username.lower()
 
     if (players[curr_user].is_recipient_angel is False):
-        update.message.reply_text(messages.ALREADY_TEXTING_MORTAL)
+        update.message.reply_text(text=messages.ALREADY_TEXTING_MORTAL)
     else:
         players[curr_user].is_recipient_angel = False
-        update.message.reply_text(messages.SET_TEXTING_MORTAL)
         context.bot.answerCallbackQuery(
             callback_query_id=update.callback_query.id, 
-            text="You are now chatting with your Mortal " + '\U0001F467\U0001F3FC ' + '\U0001F466\U0001F3FC'
+            text='\U0001F466\U0001F3FC' + "You are now chatting with your Mortal " + '\U0001F467\U0001F3FC',
+            show_alert=True
         )
+        pin_message_id = update.callback_query.message.edit_text(
+                text='\U0001F466\U0001F3FC' + "You are now chatting with your Mortal " + '\U0001F467\U0001F3FC'
+            ).message_id
+        context.bot.unpinAllChatMessages(user.id)
+        context.bot.pinChatMessage(user.id, pin_message_id)
 
 
 def set_message_recipient(update: Update, context: CallbackContext) -> None:
@@ -147,6 +161,14 @@ def main() -> None:
 
     # Start the Bot
     updater.start_polling()
+
+    # Start the Bot on web host
+    """
+    updater.start_webhook(listen="0.0.0.0",
+                          port=PORT,
+                          url_path=ANGEL_BOT_TOKEN,
+                          webhook_url="https://" + APP_NAME + ".herokuapp.com/" + ANGEL_BOT_TOKEN)
+    """
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
