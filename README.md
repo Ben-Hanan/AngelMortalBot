@@ -66,7 +66,6 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// Transform data
 const transformData = ({ data }) => {
   const sheetData = data
   const columns = sheetData[0] 
