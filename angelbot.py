@@ -73,7 +73,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
                 return
             else:
                 context.bot.send_message(
-                    text='From your mortal:\n' + update.message.text,
+                    text=messages.format_mortal_message(update.message.text),
                     chat_id=angel_chat_id
                 )
         
@@ -84,7 +84,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
                 return
             else:
                 context.bot.send_message(
-                    text='From your angel:\n' + update.message.text,
+                    text=messages.format_angel_message(update.message.text),
                     chat_id=mortal_chat_id
                 )
         # TODO: remove as this is for testing
@@ -100,12 +100,12 @@ def set_recipient_angel(update: Update, context: CallbackContext) -> None:
         players[curr_user].is_recipient_angel = True
         context.bot.answerCallbackQuery(
             callback_query_id=update.callback_query.id, 
-            text='\U0001F47C\U0001F3FC'+ " You are now chatting with your Angel " + '\U0001F47C\U0001F3FC',
+            text=messages.CHATTING_WITH_ANGEL,
             show_alert=True
         )
         pin_message_id = update.callback_query.message.edit_text(
-                text='\U0001F47C\U0001F3FC' + " You are now chatting with your Angel " + '\U0001F47C\U0001F3FC'
-            ).message_id
+                            text=messages.CHATTING_WITH_ANGEL
+                        ).message_id
         context.bot.unpinAllChatMessages(user.id)
         context.bot.pinChatMessage(user.id, pin_message_id)
 
@@ -119,12 +119,12 @@ def set_recipient_mortal(update: Update, context: CallbackContext) -> None:
         players[curr_user].is_recipient_angel = False
         context.bot.answerCallbackQuery(
             callback_query_id=update.callback_query.id, 
-            text='\U0001F466\U0001F3FC' + "You are now chatting with your Mortal " + '\U0001F467\U0001F3FC',
+            text=messages.CHATTING_WITH_MORTAL,
             show_alert=True
         )
         pin_message_id = update.callback_query.message.edit_text(
-                text='\U0001F466\U0001F3FC' + "You are now chatting with your Mortal " + '\U0001F467\U0001F3FC'
-            ).message_id
+                            text=messages.CHATTING_WITH_MORTAL
+                        ).message_id
         context.bot.unpinAllChatMessages(user.id)
         context.bot.pinChatMessage(user.id, pin_message_id)
 
@@ -139,7 +139,7 @@ def set_message_recipient(update: Update, context: CallbackContext) -> None:
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    update.message.reply_text('Choose who to chat with', reply_markup=reply_markup)
+    update.message.reply_text('Choose who to chat with!', reply_markup=reply_markup)
 
 def main() -> None:
     updater = Updater(ANGEL_BOT_TOKEN)
