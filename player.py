@@ -1,4 +1,4 @@
-from config import PLAYERS_FILENAME
+from utils import getPlayers
 
 class Player():
 	def __init__(self):
@@ -9,23 +9,19 @@ class Player():
 		self.is_recipient_angel = None
 	
 def initialize_players(players_obj):
-	players_file = open(PLAYERS_FILENAME, "r")	
-	all_players = players_file.readlines()
+	all_players = getPlayers()
 
 	for line in all_players:
-		data = line.split(",")	
-		username = data[0].strip().lower()
-		angel = data[1].strip().lower()
-		mortal = data[2].strip().lower()
+		username = line["user"]
+		angel = line["angel"]
+		mortal = line["mortal"]
+		chat_id = line["chat_id"]
 
 		players_obj[username].username = username
 		players_obj[username].angel = angel
 		players_obj[username].mortal = mortal
 
-		try:
-			# If chat_id is already stored on the .txt file, add it to the player profile
-			chat_id = data[3].strip().lower()
+		if chat_id:
 			players_obj[username].chat_id = chat_id
-
-		except:
-			print("No chat ID found from for {username} from txt file")
+		else:
+			print(f'No chat ID found from for {username} from the Google Sheets')

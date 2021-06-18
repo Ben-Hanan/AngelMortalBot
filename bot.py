@@ -3,7 +3,8 @@ import messages
 import player
 from collections import defaultdict
 
-from config import BOT_TOKEN, PLAYERS_FILENAME, HOST, PORT, APP_NAME
+from config import BOT_TOKEN, HOST, PORT, APP_NAME
+from utils import updatePlayers
 
 from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler, CallbackQueryHandler
@@ -23,53 +24,11 @@ def printPlayers(players) -> None:
 		player_data = players[player]
 		print(f'\t{player_data.username} | {player_data.angel} | {player_data.mortal} | {player_data.chat_id}')
 
-# Helper function for debugging purposes
-def printTextFileContents() -> None:
-	print(f'Reading player text file')
-	players_file = open(PLAYERS_FILENAME, "r")	
-	players = players_file.readlines()
-	for line in players:
-		data = line.split(",")	
-		username = data[0].strip().lower()
-		angel = data[1].strip().lower()
-		mortal = data[2].strip().lower()
-
-		try:
-			chat_id = data[3].strip().lower()
-			print(f'\t{username} | {angel} | {mortal} | {chat_id}')
-		except:
-			print(f'\t{username} | {angel} | {mortal} | No Chat Id')
-
-
-# TODO: Remove this line after done with code, this is for debugging
-printPlayers(players)
-
-# Updates .txt file for persistent player profile storage
-def updatePlayerProfile(input_user_id, input_username) -> None:
-	print(f'Updating player text file')
-	players_file = open(PLAYERS_FILENAME, "r")	
-	players = players_file.readlines()
-
-	for idx, line in enumerate(players):
-		data = line.split(",")	
-		username = data[0].strip().lower()
-		angel = data[1].strip().lower()
-		mortal = data[2].strip().lower()
-
-		if username == input_username.lower():
-			players[idx] = f'{username}, {angel}, {mortal}, {str(input_user_id)}\n'
-
-	players_file = open(PLAYERS_FILENAME, "w")
-	players_file.writelines(players)
-	players_file.close()
-
 # TODO: Update welcome message
 def start(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
 	
-	updatePlayerProfile(user.id, user.username)
-
-	printTextFileContents()
+	updatePlayers(str(user.username).strip().lower(), user.id)
 
 	update.message.reply_markdown_v2(
 		fr'Hi {user.mention_markdown_v2()}\!',
