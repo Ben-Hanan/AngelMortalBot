@@ -1,4 +1,4 @@
-from utils import getPlayers
+from utils import getPlayersFromGoogleSheets
 
 class Player():
 	def __init__(self):
@@ -9,7 +9,7 @@ class Player():
 		self.is_recipient_angel = None
 	
 def initialize_players(players_obj):
-	all_players = getPlayers()
+	all_players = getPlayersFromGoogleSheets()
 
 	for line in all_players:
 		username = line["user"]
