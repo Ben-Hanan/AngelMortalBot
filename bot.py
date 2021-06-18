@@ -1,4 +1,5 @@
 import logging
+import time
 import messages
 import player
 from collections import defaultdict
@@ -46,18 +47,45 @@ def updatePlayerProfile(input_user_id, input_username) -> None:
 
 # TODO: Update welcome message
 def start(update: Update, context: CallbackContext) -> None:
-	user = update.effective_user
-    
-	updatePlayerProfile(user.id, user.username)
+    user = update.effective_user
 
-	update.message.reply_markdown_v2(
-		fr'Hi {user.mention_markdown_v2()}\!',
-		reply_markup=ForceReply(selective=True),
-	)
+    updatePlayerProfile(user.id, user.username)
+
+    update.message.reply_markdown_v2(
+        fr'Hi {user.mention_markdown_v2()}\!'
+        + messages.START_MESSAGE,
+        reply_markup=ForceReply(selective=True),
+    )
+
+def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
+    user = update.effective_user
+    mortal = players[user.username].mortal
+
+    if mortal is None:
+        update.message.reply_text(messages.MORTAL_NOT_FOUND)
+    else:
+        keyboard = [
+            [
+                InlineKeyboardButton("Reveal!", callback_data='reveal'),
+            ],
+        ]
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text('Your mortal is...', reply_markup=reply_markup)        
+
+def reveal_mortal(update: Update, context: CallbackContext):
+    user = update.effective_user
+    mortal = players[user.username].mortal
+
+    context.bot.answerCallbackQuery(
+        callback_query_id=update.callback_query.id, 
+        text=messages.format_mortal_reveal(mortal),
+    )
 
 #TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Help!')
+    update.message.reply_text(messages.format_help_message())
 
 def forward_message(update: Update, context: CallbackContext) -> None:
     """Send a message to either the Angel or Mortal depending on the mode set"""
@@ -68,9 +96,9 @@ def forward_message(update: Update, context: CallbackContext) -> None:
         update.message.reply_text(messages.CHOOSE_RECIPIENT)
     else:
         if players[curr_user].is_recipient_angel is True:
-            angel_chat_id = players[players[curr_user].angel].chat_id
+            angel_chat_id = players[curr_user].angel.chat_id
             if angel_chat_id is None:
-                update.message.reply_text(messages.BOT_NOT_STARTED)
+                update.callback_query.message.edit_text(messages.BOT_NOT_STARTED)
                 return
             else:
                 context.bot.send_message(
@@ -79,17 +107,15 @@ def forward_message(update: Update, context: CallbackContext) -> None:
                 )
         
         if players[curr_user].is_recipient_angel is False:
-            mortal_chat_id = players[players[curr_user].mortal].chat_id
+            mortal_chat_id = players[curr_user].mortal.chat_id
             if mortal_chat_id is None:
-                update.message.reply_text(messages.BOT_NOT_STARTED)
+                update.callback_query.message.edit_text(messages.BOT_NOT_STARTED)
                 return
             else:
                 context.bot.send_message(
                     text=messages.format_angel_message(update.message.text),
                     chat_id=mortal_chat_id
                 )
-        # TODO: remove as this is for testing
-        update.message.reply_text('sent message')
 
 def set_recipient_angel(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
@@ -151,6 +177,9 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
+
+    dispatcher.add_handler(CommandHandler("revealmortal", reveal_mortal_command))
+    dispatcher.add_handler(CallbackQueryHandler(reveal_mortal, pattern='reveal'))
 
     dispatcher.add_handler(CommandHandler("setrecipient", set_message_recipient))
     dispatcher.add_handler(CallbackQueryHandler(set_recipient_angel, pattern='angel'))
