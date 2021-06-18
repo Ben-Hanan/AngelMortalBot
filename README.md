@@ -2,9 +2,8 @@
 
 ## Hosting on Heroku
 1. Ensure that in the Procfile, the run script naming is consistent with the main Python script
-2. Use `updater.start_webhook()` instead of `updater.start_polling()` in the `main()` function
-3. Ensure that Heroku has config vars appropriately set to reflect the environment variables
-4. Push the code to heroku
+2. Ensure that Heroku has config vars appropriately set to reflect the environment variables
+3. Push the code to heroku
 
 <br>
 
@@ -20,7 +19,16 @@
 
 ## Angels and mortal data storage:
 Data for angels and mortals in the bot is stored on Google Sheets, using Google Apps Script to update
-and get the player profiles. Below is the Google Apps Script code used to make `GET` and `POST` requests
+and get the player profiles. 
+
+<br>
+
+### Data storage format:
+![Google Sheets](/assets/angel-mortal-sheets-storage.png)
+
+<br>
+
+Below is the Google Apps Script code used to make `GET` and `POST` requests
 to update the player profiles in Google Sheets
 
 ```
