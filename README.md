@@ -8,3 +8,6 @@
 
 ### Viewing logs:
 - Logs can be viewed using `heroku logs -t`
+
+### Running the bot locally:
+- `pipenv run python bot.py`
