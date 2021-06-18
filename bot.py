@@ -35,8 +35,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 	update.message.reply_markdown_v2(
 		fr'Hi {user.mention_markdown_v2()}\!'
-		+ messages.START_MESSAGE,
-		reply_markup=ForceReply(selective=True),
+		+ messages.START_MESSAGE
 	)
 
 def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
@@ -104,7 +103,7 @@ def set_recipient_angel(update: Update, context: CallbackContext) -> None:
 	curr_user = user.username.lower()
 
 	if (players[curr_user].is_recipient_angel is True):
-		update.message.reply_text(messages.ALREADY_TEXTING_ANGEL)
+		update.callback_query.message.edit_text(messages.ALREADY_TEXTING_ANGEL)
 	else:
 		players[curr_user].is_recipient_angel = True
 		context.bot.answerCallbackQuery(
@@ -123,7 +122,7 @@ def set_recipient_mortal(update: Update, context: CallbackContext) -> None:
 	curr_user = user.username.lower()
 
 	if (players[curr_user].is_recipient_angel is False):
-		update.message.reply_text(text=messages.ALREADY_TEXTING_MORTAL)
+		update.callback_query.message.edit_text(text=messages.ALREADY_TEXTING_MORTAL)
 	else:
 		players[curr_user].is_recipient_angel = False
 		context.bot.answerCallbackQuery(

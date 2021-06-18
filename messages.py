@@ -1,6 +1,6 @@
 CONTACT = f'contact either the admin @ednaleong or the creators of this bot @hansebeast and @HananChoong'
 
-NOT_INITIALIZED = f'Sorry! But it looks like you are not in this round of angel-mortal! If this is a mistake please ' + CONTACT
+NOT_INITIALIZED = f'Sorry! But it looks like you are not in this round of angel mortal! If this is a mistake please ' + CONTACT
 BOT_NOT_STARTED = f'The player you are trying to chat with has not started this bot. Please wait for them to start the bot. If this is unexpected please ' + CONTACT
 MORTAL_NOT_FOUND = f"You don't have a mortal! If this is wrong, please " + CONTACT
 ALREADY_TEXTING_MORTAL = f'You are already chatting with your Mortal!'
@@ -10,12 +10,12 @@ CHOOSE_RECIPIENT = f'Please select who you want to send this message to through 
 CHATTING_WITH_ANGEL= '\U0001F47C\U0001F3FC' + " You are now chatting with your Angel " + '\U0001F47C\U0001F3FC'
 CHATTING_WITH_MORTAL= '\U0001F466\U0001F3FC' + " You are now chatting with your Mortal " + '\U0001F467\U0001F3FC'
 
-START_MESSAGE = f'\n\n Welcome to Angel-Mortal, a game where you try to be the best angel to your mortal by showering them with love ' + '\U0001F60D' + '\n\n'
+START_MESSAGE = f'\n\nWelcome to Angel Mortal, a game where you try to be the best angel to your mortal by showering them with love ' + '\U0001F60D' + '\n\n'
 TUTORIAL = f'Since the aim of the game is to love on one another ' + '\u2764 ' + 'but remain anonymous ' + '\U0001F464' + ' at the same time, you can use me to relay your messages to both you angel and your mortal! Isn\'t that convenient!\n\n'
 EXAMPLES = f''
 
 HELP_MESSAGE = f'I am the middleman between you and your mortal or angel.\n\n' + f'You can control who you talk to using this command:\n\n'
-COMMAND = f'/setrecipient - choose to send messages to either your angel or mortal\n\n' + '/revealmortal - reveal your mortal to you!\n\n'
+COMMAND = f'/setrecipient : choose to send messages to either your angel or mortal\n\n' + '/revealmortal : reveal your mortal to you!\n\n'
 LIMITATIONS = f'Keep in mind that in the current implementation of this bot, I am unable to forward any forms of media ' + '\U0001F62A' + '\n\n'
 ASSISTANCE = f'If you ever need more assistance, you can ' + CONTACT
 
