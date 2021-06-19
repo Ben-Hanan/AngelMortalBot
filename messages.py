@@ -1,6 +1,7 @@
 CONTACT = f'contact either the admin @ednaleong or the creators of this bot @hansebeast and @HananChoong'
 
 NOT_INITIALIZED = f'\n\nSorry\! But it looks like you are not in this round of angel mortal\! If this is a mistake please ' + CONTACT
+MESSAGE_SEND_FAIL = f'\n\nSorry\! Your message failed to send, please ' + CONTACT
 BOT_NOT_STARTED = f'The player you are trying to chat with has not started this bot. Please wait for them to start the bot. If this is unexpected please ' + CONTACT
 MORTAL_NOT_FOUND = f"You don't have a mortal! If this is wrong, please " + CONTACT
 ALREADY_TEXTING_MORTAL = '\U0001F466\U0001F3FC' + f'You are chatting with your Mortal!' + '\U0001F467\U0001F3FC'
@@ -34,4 +35,4 @@ def format_help_message():
     return HELP_MESSAGE + COMMAND + LIMITATIONS + ASSISTANCE
 
 def format_mortal_reveal(mortal):
-    return f'Your mortal is {mortal.username}!\n\n' + f'Please do your best to take care of {mortal.username} and ensure that they feel loved during the duration of this game!' + '\u2764'
+    return f'Your mortal is @{mortal.username}!\n\n' + f'Please do your best to take care of @{mortal.username} and ensure that they feel loved during the duration of this game!' + '\u2764'

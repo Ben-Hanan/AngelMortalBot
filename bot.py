@@ -95,29 +95,34 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 		update.message.reply_text(messages.CHOOSE_RECIPIENT)
 		logger.warning(f'{curr_user} has not chosen the recipient for their messages')
 	else:
-		if players[curr_user].is_recipient_angel is True:
-			angel_chat_id = players[curr_user].angel.chat_id
-			if angel_chat_id is None:
-				update.message.reply_text(messages.BOT_NOT_STARTED)
-				logger.warning(f'{curr_user} tried to contact their angel but their angel has not started this bot')
-				return
-			else:
-				context.bot.send_message(
-					text=messages.format_mortal_message(update.message.text),
-					chat_id=angel_chat_id
-				)
-		
-		if players[curr_user].is_recipient_angel is False:
-			mortal_chat_id = players[curr_user].mortal.chat_id
-			if mortal_chat_id is None:
-				update.message.reply_text(messages.BOT_NOT_STARTED)
-				logger.warning(f'{curr_user} tried to contact their mortal but their mortal has not started this bot')
-				return
-			else:
-				context.bot.send_message(
-					text=messages.format_angel_message(update.message.text),
-					chat_id=mortal_chat_id
-				)
+		try:
+			if players[curr_user].is_recipient_angel is True:
+				angel_chat_id = players[curr_user].angel.chat_id
+				if angel_chat_id is None:
+					update.message.reply_text(messages.BOT_NOT_STARTED)
+					logger.warning(f'{curr_user} tried to contact their angel but their angel has not started this bot')
+					return
+				else:
+					context.bot.send_message(
+						text=messages.format_mortal_message(update.message.text),
+						chat_id=angel_chat_id
+					)
+			
+			if players[curr_user].is_recipient_angel is False:
+				mortal_chat_id = players[curr_user].mortal.chat_id
+				if mortal_chat_id is None:
+					update.message.reply_text(messages.BOT_NOT_STARTED)
+					logger.warning(f'{curr_user} tried to contact their mortal but their mortal has not started this bot')
+					return
+				else:
+					context.bot.send_message(
+						text=messages.format_angel_message(update.message.text),
+						chat_id=mortal_chat_id
+					)
+		except Exception as e:
+			logger.error(f'{curr_user} failed to send a message')
+			update.message.reply_text(messages.MESSAGE_SEND_FAIL)
+			
 
 def set_recipient_angel(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
