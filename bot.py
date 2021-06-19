@@ -4,7 +4,7 @@ import player
 from collections import defaultdict
 
 from config import BOT_TOKEN, HOST, PORT, APP_NAME
-from utils import updateGoogleSheetsPlayers
+from utils import updateGoogleSheetsPlayers, UPDATE_SUCCESSFUL, UPDATE_UNSUCCESSFUL
 
 from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
@@ -24,19 +24,23 @@ def printPlayers(players) -> None:
 		player_data = players[player]
 		print(f'\t{player_data.username} | {player_data.angel} | {player_data.mortal} | {player_data.chat_id}')
 
-# TODO: Update welcome message
 def start(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
+	response = updateGoogleSheetsPlayers(user.username, user.id)
+	response_code = response['result']['code']
 
-	updateGoogleSheetsPlayers(user.username.lower(), user.id)
-
-	player.initialize_players(players)
-	players[user.username.lower()].chat_id = user.id
-
-	update.message.reply_markdown_v2(
-		fr'Hi {user.mention_markdown_v2()}\!'
-		+ messages.START_MESSAGE
-	)
+	if response_code == UPDATE_SUCCESSFUL:
+		player.initialize_players(players)
+		players[user.username.lower()].chat_id = user.id
+		update.message.reply_markdown_v2(
+			fr'Hi {user.mention_markdown_v2()}\!'
+			+ messages.START_MESSAGE
+		)
+	elif response_code == UPDATE_UNSUCCESSFUL:
+		update.message.reply_markdown_v2(
+			fr'Hi {user.mention_markdown_v2()}\!'
+			+ messages.NOT_INITIALIZED
+		)
 
 def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
