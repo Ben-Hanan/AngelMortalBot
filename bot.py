@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 players = defaultdict(player.Player)
 player.initialize_players(players)
 
+parse_mode = 'MarkdownV2'
+
 # Helper function for debugging purposes
 def printPlayers(players) -> None:
 	for player in players:
@@ -27,15 +29,21 @@ def printPlayers(players) -> None:
 # TODO: Update welcome message
 def start(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
+	username = user.username.lower()
 
-	updateGoogleSheetsPlayers(user.username.lower(), user.id)
+	updateGoogleSheetsPlayers((username), user.id)
+
+	logger.info(f'updated google sheet for {username} and input chat_id {players[username].chat_id}')
 
 	player.initialize_players(players)
-	players[user.username.lower()].chat_id = user.id
+	players[username].chat_id = user.id
 
-	update.message.reply_markdown_v2(
-		fr'Hi {user.mention_markdown_v2()}\!'
-		+ messages.START_MESSAGE
+	logger.info(f'{username} started the bot with chat_id {players[username].chat_id}')
+
+	update.message.reply_text(
+		text=fr'Hi {user.mention_markdown_v2()}\!'
+		+ messages.START_MESSAGE,
+		parse_mode=parse_mode
 	)
 
 def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
@@ -44,6 +52,7 @@ def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 
 	if mortal is None:
 		update.message.reply_text(messages.MORTAL_NOT_FOUND)
+		logger.error(f'could not find mortal for {players[user.username.lower()]}')
 	else:
 		keyboard = [
 			[
@@ -53,7 +62,7 @@ def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 
 		reply_markup = InlineKeyboardMarkup(keyboard)
 
-		update.message.reply_text('Your mortal is...', reply_markup=reply_markup)        
+		update.message.reply_text('Your mortal is...', reply_markup=reply_markup, parse_mode=parse_mode)        
 
 def reveal_mortal(update: Update, context: CallbackContext):
     user = update.effective_user
@@ -64,7 +73,7 @@ def reveal_mortal(update: Update, context: CallbackContext):
         text=messages.format_mortal_reveal(mortal),
     )
 
-    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal))
+    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal), parse_mode=parse_mode)
 
 #TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -77,11 +86,13 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 
 	if players[curr_user].is_recipient_angel is None:
 		update.message.reply_text(messages.CHOOSE_RECIPIENT)
+		logger.warning(f'{curr_user} has not chosen the recipient for their messages')
 	else:
 		if players[curr_user].is_recipient_angel is True:
 			angel_chat_id = players[curr_user].angel.chat_id
 			if angel_chat_id is None:
 				update.message.reply_text(messages.BOT_NOT_STARTED)
+				logger.warning(f'{curr_user} tried to contact their angel but their angel has not started this bot')
 				return
 			else:
 				context.bot.send_message(
@@ -93,6 +104,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 			mortal_chat_id = players[curr_user].mortal.chat_id
 			if mortal_chat_id is None:
 				update.message.reply_text(messages.BOT_NOT_STARTED)
+				logger.warning(f'{curr_user} tried to contact their mortal but their mortal has not started this bot')
 				return
 			else:
 				context.bot.send_message(
