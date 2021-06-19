@@ -175,17 +175,42 @@ def set_message_recipient(update: Update, context: CallbackContext) -> None:
 
 	update.message.reply_text('Choose who to chat with!', reply_markup=reply_markup)
 
-def forward_media_message(update: Update, context: CallbackContext) -> None:
-	bot = context.bot
+def forward_photo_message(update: Update, context: CallbackContext) -> None:
+	user = update.effective_user
+	curr_user = user.username.lower()
 
 	image_id = update.message.photo[len(update.message.photo)-1].file_id
-	file_path = bot.get_file(image_id).file_path
+	"""
+	file_path = context.bot.get_file(image_id).file_path
 	image_url = "https://api.telegram.org/file/bot{0}/{1}".format(BOT_TOKEN, file_path)
+	"""
 
-	print("Image id: ", image_id)
-	print("Image url: ", file_path)
-
-	context.bot.send_photo(131189243, file_path)
+	if players[curr_user].is_recipient_angel is None:
+		update.message.reply_text(messages.CHOOSE_RECIPIENT)
+		logger.warning(f'{curr_user} has not chosen the recipient for their photo messages')
+	else:
+		try:
+			if players[curr_user].is_recipient_angel is True:
+				angel_chat_id = players[curr_user].angel.chat_id
+				if angel_chat_id is None:
+					update.message.reply_text(messages.BOT_NOT_STARTED)
+					logger.warning(f'{curr_user} tried to contact their angel but their angel has not started this bot')
+					return
+				else:
+					context.bot.send_photo(chat_id=angel_chat_id, photo=image_id)
+			
+			if players[curr_user].is_recipient_angel is False:
+				mortal_chat_id = players[curr_user].mortal.chat_id
+				if mortal_chat_id is None:
+					update.message.reply_text(messages.BOT_NOT_STARTED)
+					logger.warning(f'{curr_user} tried to contact their mortal but their mortal has not started this bot')
+					return
+				else:
+					context.bot.send_photo(chat_id=mortal_chat_id, photo=image_id)
+		except Exception as e:
+			logger.error(f'{curr_user} failed to send a photo message')
+			update.message.reply_text(messages.MESSAGE_SEND_FAIL)
+	
 
 def main() -> None:
 	updater = Updater(BOT_TOKEN)
@@ -207,7 +232,7 @@ def main() -> None:
 
 	# on non command i.e message - send the message on Telegram to the user
 	dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, forward_message))
-	dispatcher.add_handler(MessageHandler(Filters.photo & ~Filters.command, forward_media_message))
+	dispatcher.add_handler(MessageHandler(Filters.photo & ~Filters.command, forward_photo_message))
 
 
 	if HOST == "local":
