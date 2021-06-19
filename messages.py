@@ -3,8 +3,8 @@ CONTACT = f'contact either the admin @ednaleong or the creators of this bot @han
 NOT_INITIALIZED = f'Sorry! But it looks like you are not in this round of angel mortal! If this is a mistake please ' + CONTACT
 BOT_NOT_STARTED = f'The player you are trying to chat with has not started this bot. Please wait for them to start the bot. If this is unexpected please ' + CONTACT
 MORTAL_NOT_FOUND = f"You don't have a mortal! If this is wrong, please " + CONTACT
-ALREADY_TEXTING_MORTAL = '\U0001F466\U0001F3FC' + f'You are already chatting with your Mortal!' + '\U0001F467\U0001F3FC'
-ALREADY_TEXTING_ANGEL = '\U0001F47C\U0001F3FC' + f'You are already chatting with your Angel!' + '\U0001F47C\U0001F3FC'
+ALREADY_TEXTING_MORTAL = '\U0001F466\U0001F3FC' + f'You\'re already chatting with your Mortal!' + '\U0001F467\U0001F3FC'
+ALREADY_TEXTING_ANGEL = '\U0001F47C\U0001F3FC' + f'You\'re already chatting with your Angel!' + '\U0001F47C\U0001F3FC'
 
 CHOOSE_RECIPIENT = f'Please select who you want to send this message to through the use of the command /setrecipient'
 CHATTING_WITH_ANGEL= '\U0001F47C\U0001F3FC' + " You are now chatting with your Angel " + '\U0001F47C\U0001F3FC'

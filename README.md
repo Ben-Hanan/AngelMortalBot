@@ -1,5 +1,24 @@
 # angel-mortal-bot
 
+## Installing dependencies
+This bot was made in `python 3.8`
+We used pipenv to manage the virtualenv and packages of our project.
+
+`pip install pipenv`
+
+You can then install the required packages through the command
+
+`pipenv install`
+
+## Configuring .env file
+Here are the variables you need to have in you .env file
+
+```
+BOT_TOKEN = telegram bot token generated through BotFather
+GOOGLE_SCRIPT = link to your google sheets
+HOST = local
+```
+
 ## Hosting on Heroku
 1. Ensure that in the Procfile, the run script naming is consistent with the main Python script
 2. Ensure that Heroku has config vars appropriately set to reflect the environment variables
