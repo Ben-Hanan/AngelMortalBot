@@ -175,6 +175,18 @@ def set_message_recipient(update: Update, context: CallbackContext) -> None:
 
 	update.message.reply_text('Choose who to chat with!', reply_markup=reply_markup)
 
+def forward_media_message(update: Update, context: CallbackContext) -> None:
+	bot = context.bot
+
+	image_id = update.message.photo[len(update.message.photo)-1].file_id
+	file_path = bot.get_file(image_id).file_path
+	image_url = "https://api.telegram.org/file/bot{0}/{1}".format(BOT_TOKEN, file_path)
+
+	print("Image id: ", image_id)
+	print("Image url: ", file_path)
+
+	context.bot.send_photo(131189243, file_path)
+
 def main() -> None:
 	updater = Updater(BOT_TOKEN)
 
@@ -195,6 +207,7 @@ def main() -> None:
 
 	# on non command i.e message - send the message on Telegram to the user
 	dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, forward_message))
+	dispatcher.add_handler(MessageHandler(Filters.photo & ~Filters.command, forward_media_message))
 
 
 	if HOST == "local":
