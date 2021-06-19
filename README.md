@@ -10,14 +10,18 @@ You can then install the required packages through the command
 
 `pipenv install`
 
+<br>
+
 ## Configuring .env file
-Here are the variables you need to have in you .env file
+Here are the variables you need to have in your .env file
 
 ```
 BOT_TOKEN = telegram bot token generated through BotFather
-GOOGLE_SCRIPT = link to your google sheets
+GOOGLE_SCRIPT = link to your [google sheets](###data-storage-format)
 HOST = local
 ```
+
+<br>
 
 ## Hosting on Heroku
 1. Ensure that in the Procfile, the run script naming is consistent with the main Python script
