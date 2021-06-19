@@ -14,7 +14,8 @@ CHATTING_WITH_MORTAL= '\U0001F466\U0001F3FC' + " You are now chatting with your 
 START_MESSAGE = f'\n\nWelcome to Angel Mortal, a game where you try to be the best angel to your mortal by showering them with love ' + '\U0001F60D' + '\n\n'
 TUTORIAL = f'Since the aim of the game is to love on one another ' + '\u2764 ' + 'but remain anonymous ' + '\U0001F464' + ' at the same time, you can use me to relay your messages to both you angel and your mortal\! Isn\'t that convenient\!\n\n'
 EXAMPLES = f'Some examples of what you can do could be:\nSending them a prayer/words of encouragement\nyou can ask for their address and buy them food\!\nchat with them\n\n'
-END_START = f'If you need any help, you can bring up the help message through /help and if you\'re ready to start, you can find out who your mortal is by typing /revealmortal \n\n Have a blessed V Camp\!'
+END_START = f'If you need any help, you can bring up the help message through /help and if you\'re ready to start, you can find out who your mortal is by typing /revealmortal\n\n'
+EXTRA = f'to start chatting with either your angel or mortal, use the /setrecipient command to choose who to send your message to \n\nHave a blessed V Camp\!'
 
 HELP_MESSAGE = f'I am the middleman between you and your mortal or angel.\n\n' + f'You can control who you talk to using this command:\n\n'
 COMMAND = f'/setrecipient : choose to send messages to either your angel or mortal\n' + '/revealmortal : reveal your mortal to you!\n\n'
