@@ -12,9 +12,9 @@ def initialize_players(players_obj):
 	all_players = getPlayersFromGoogleSheets()
 
 	for line in all_players:
-		username = line["user"]
-		angel = line["angel"]
-		mortal = line["mortal"]
+		username = line["user"].lower()
+		angel = line["angel"].lower()
+		mortal = line["mortal"].lower()
 		chat_id = line["chat_id"]
 
 		players_obj[username].username = username
