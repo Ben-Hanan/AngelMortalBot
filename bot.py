@@ -28,10 +28,10 @@ def printPlayers(players) -> None:
 def start(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
 
-	updateGoogleSheetsPlayers(user.username, user.id)
+	updateGoogleSheetsPlayers(user.username.lower(), user.id)
 
 	player.initialize_players(players)
-	players[user.username].chat_id = user.id
+	players[user.username.lower()].chat_id = user.id
 
 	update.message.reply_markdown_v2(
 		fr'Hi {user.mention_markdown_v2()}\!'

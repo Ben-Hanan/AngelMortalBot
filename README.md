@@ -17,9 +17,11 @@ Here are the variables you need to have in your .env file
 
 ```
 BOT_TOKEN = telegram bot token generated through BotFather
-GOOGLE_SCRIPT = link to your [google sheets](###data-storage-format)
+GOOGLE_SCRIPT = link to your google sheets
 HOST = local
 ```
+
+More info on the [google sheets](###data-storage-format) can be found below.
 
 <br>
 
