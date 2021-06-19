@@ -23,5 +23,3 @@ def initialize_players(players_obj):
 
 		if chat_id:
 			players_obj[username].chat_id = chat_id
-		else:
-			print(f'No chat ID found from for {username} from the Google Sheets')

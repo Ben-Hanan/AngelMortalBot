@@ -4,7 +4,7 @@ import player
 from collections import defaultdict
 
 from config import BOT_TOKEN, HOST, PORT, APP_NAME
-from utils import updateGoogleSheetsPlayers
+from utils import updateGoogleSheetsPlayers, UPDATE_SUCCESSFUL, UPDATE_UNSUCCESSFUL
 
 from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
@@ -26,12 +26,12 @@ def printPlayers(players) -> None:
 		player_data = players[player]
 		print(f'\t{player_data.username} | {player_data.angel} | {player_data.mortal} | {player_data.chat_id}')
 
-# TODO: Update welcome message
 def start(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
 	username = user.username.lower()
 
-	updateGoogleSheetsPlayers((username), user.id)
+	response = updateGoogleSheetsPlayers(user.username, user.id)
+	response_code = response['result']['code']
 
 	logger.info(f'updated google sheet for {username} and input chat_id {players[username].chat_id}')
 
@@ -40,10 +40,17 @@ def start(update: Update, context: CallbackContext) -> None:
 
 	logger.info(f'{username} started the bot with chat_id {players[username].chat_id}')
 
-	update.message.reply_text(
-		text=fr'Hi {user.mention_markdown_v2()}\!'
-		+ messages.START_MESSAGE,
-		parse_mode=parse_mode
+	if response_code == UPDATE_SUCCESSFUL:
+		player.initialize_players(players)
+		players[user.username.lower()].chat_id = user.id
+		update.message.reply_markdown_v2(
+			fr'Hi {user.mention_markdown_v2()}\!'
+			+ messages.format_start_message()
+		)
+	elif response_code == UPDATE_UNSUCCESSFUL:
+		update.message.reply_markdown_v2(
+			fr'Hi {user.mention_markdown_v2()}\!'
+			+ messages.NOT_INITIALIZED
 	)
 
 def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
@@ -62,7 +69,7 @@ def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 
 		reply_markup = InlineKeyboardMarkup(keyboard)
 
-		update.message.reply_text('Your mortal is...', reply_markup=reply_markup, parse_mode=parse_mode)        
+		update.message.reply_text('Your mortal is...', reply_markup=reply_markup)        
 
 def reveal_mortal(update: Update, context: CallbackContext):
     user = update.effective_user
@@ -73,7 +80,7 @@ def reveal_mortal(update: Update, context: CallbackContext):
         text=messages.format_mortal_reveal(mortal),
     )
 
-    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal), parse_mode=parse_mode)
+    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal))
 
 #TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:
