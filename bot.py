@@ -3,7 +3,7 @@ import messages
 import player
 from collections import defaultdict
 
-from config import BOT_TOKEN, HOST, PORT, APP_NAME
+from config import BOT_TOKEN, HOST, PORT, APP_NAME, HEROKU_LINK
 from utils import updateGoogleSheetsPlayers, promptAi, UPDATE_SUCCESSFUL, UPDATE_UNSUCCESSFUL
 
 from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
@@ -251,7 +251,7 @@ def main() -> None:
 		updater.start_webhook(listen="0.0.0.0",
 							port=PORT,
 							url_path=BOT_TOKEN,
-							webhook_url="https://" + APP_NAME + ".herokuapp.com/" + BOT_TOKEN)
+							webhook_url=HEROKU_LINK + BOT_TOKEN)
 
 	# Run the bot until you press Ctrl-C or the process receives SIGINT,
 	# SIGTERM or SIGABRT. This should be used most of the time, since
