@@ -3,8 +3,8 @@ import messages
 import player
 from collections import defaultdict
 
-from config import BOT_TOKEN, HOST, PORT, APP_NAME
-from utils import updateGoogleSheetsPlayers, UPDATE_SUCCESSFUL, UPDATE_UNSUCCESSFUL
+from config import BOT_TOKEN, HOST, PORT, APP_NAME, HEROKU_LINK
+from utils import updateGoogleSheetsPlayers, promptAi, UPDATE_SUCCESSFUL, UPDATE_UNSUCCESSFUL
 
 from telegram import Update, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
@@ -31,7 +31,7 @@ def start(update: Update, context: CallbackContext) -> None:
 	username = user.username.lower()
 
 	response = updateGoogleSheetsPlayers(user.username, user.id)
-	response_code = response['result']['code']
+	response_code = response['result'][-3:]
 
 	logger.info(f'updated google sheet for {username} and input chat_id {players[username].chat_id}')
 
@@ -77,14 +77,18 @@ def reveal_mortal(update: Update, context: CallbackContext):
 
     context.bot.answerCallbackQuery(
         callback_query_id=update.callback_query.id, 
-        text=messages.format_mortal_reveal(mortal),
     )
 
-    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal))
+    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal), parse_mode=parse_mode)
 
 #TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:
 	update.message.reply_text(messages.format_help_message())
+
+def generate_text(update: Update, context: CallbackContext) -> None:
+	prompt = update.message.text
+	message = promptAi(prompt)
+	context.bot.send_message(message.chat.id, message)
 
 def forward_message(update: Update, context: CallbackContext) -> None:
 	"""Send a message to either the Angel or Mortal depending on the mode set"""
@@ -105,7 +109,8 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 				else:
 					context.bot.send_message(
 						text=messages.format_mortal_message(update.message.text),
-						chat_id=angel_chat_id
+						chat_id=angel_chat_id,
+						parse_mode = parse_mode
 					)
 			
 			if players[curr_user].is_recipient_angel is False:
@@ -117,7 +122,8 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 				else:
 					context.bot.send_message(
 						text=messages.format_angel_message(update.message.text),
-						chat_id=mortal_chat_id
+						chat_id=mortal_chat_id,
+						parse_mode = parse_mode
 					)
 		except Exception as e:
 			logger.error(f'{curr_user} failed to send a message')
@@ -222,6 +228,8 @@ def main() -> None:
 	dispatcher.add_handler(CommandHandler("start", start))
 	dispatcher.add_handler(CommandHandler("help", help_command))
 
+	# dispatcher.add_handler(CommandHandler("generatetext", generate_text))
+
 	dispatcher.add_handler(CommandHandler("revealmortal", reveal_mortal_command))
 	dispatcher.add_handler(CallbackQueryHandler(reveal_mortal, pattern='reveal'))
 
@@ -243,7 +251,7 @@ def main() -> None:
 		updater.start_webhook(listen="0.0.0.0",
 							port=PORT,
 							url_path=BOT_TOKEN,
-							webhook_url="https://" + APP_NAME + ".herokuapp.com/" + BOT_TOKEN)
+							webhook_url=HEROKU_LINK + BOT_TOKEN)
 
 	# Run the bot until you press Ctrl-C or the process receives SIGINT,
 	# SIGTERM or SIGABRT. This should be used most of the time, since

@@ -118,7 +118,7 @@ function updateUserChatId(username, chatId) {
 
   const sheetStartRow = 2;
   const sheetStartCol = 1;
-  const sheetChatIdCol = 4;
+  const sheetChatIdCol = 5;
   const lastRowWithContent = Sheet.getLastRow();
   const totalRows = lastRowWithContent - sheetStartRow;
 
@@ -132,10 +132,10 @@ function updateUserChatId(username, chatId) {
     // Case sensitive checking of username
     if (currUsername == username) {
       Sheet.getRange(sheetRowIdx, sheetChatIdCol).setValue(chatId)
-      return `User ${username} has its chat ID successfully updated with ${chatId}`
+      return `User ${username} has its chat ID successfully updated with ${chatId} 200`
     }
   }
 
-   return `Unable to find user ${username} in the Google Sheet for ${SHEET_NAME}`
+   return `Unable to find user ${username} in the Google Sheet for ${SHEET_NAME} 404`
 }
 ```

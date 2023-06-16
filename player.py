@@ -6,6 +6,7 @@ class Player():
 		self.angel = None
 		self.mortal = None
 		self.chat_id = None
+		self.vg = None
 		self.is_recipient_angel = None
 	
 def initialize_players(players_obj):
@@ -15,11 +16,13 @@ def initialize_players(players_obj):
 		username = line["user"].strip().lower()
 		angel = line["angel"].strip().lower()
 		mortal = line["mortal"].strip().lower()
+		vg = line["vg"].strip().lower()
 		chat_id = line["chat_id"]
 
 		players_obj[username].username = username
 		players_obj[username].angel = players_obj[angel]
 		players_obj[username].mortal = players_obj[mortal]
+		players_obj[username].vg = vg
 
 		if chat_id:
 			players_obj[username].chat_id = chat_id
