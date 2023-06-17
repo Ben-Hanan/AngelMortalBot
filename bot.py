@@ -55,7 +55,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 	user = update.effective_user
-	mortal = players[user.username.lower()].mortal
+	mortal = players[players[user.username.lower()].mortal]
 
 	if mortal is None:
 		update.message.reply_text(messages.MORTAL_NOT_FOUND)
