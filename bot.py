@@ -73,7 +73,7 @@ def reveal_mortal_command(update: Update, context: CallbackContext) -> None:
 
 def reveal_mortal(update: Update, context: CallbackContext):
     user = update.effective_user
-    mortal = players[user.username.lower()].mortal
+    mortal = players[players[user.username.lower()].mortal]
 
     context.bot.answerCallbackQuery(
         callback_query_id=update.callback_query.id, 
@@ -101,7 +101,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 	else:
 		try:
 			if players[curr_user].is_recipient_angel is True:
-				angel_chat_id = players[curr_user].angel.chat_id
+				angel_chat_id = players[players[curr_user].angel].chat_id
 				if angel_chat_id is None:
 					update.message.reply_text(messages.BOT_NOT_STARTED)
 					logger.warning(f'{curr_user} tried to contact their angel but their angel has not started this bot')
@@ -114,7 +114,7 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 					)
 			
 			if players[curr_user].is_recipient_angel is False:
-				mortal_chat_id = players[curr_user].mortal.chat_id
+				mortal_chat_id = players[players[curr_user].mortal].chat_id
 				if mortal_chat_id is None:
 					update.message.reply_text(messages.BOT_NOT_STARTED)
 					logger.warning(f'{curr_user} tried to contact their mortal but their mortal has not started this bot')
@@ -197,7 +197,7 @@ def forward_photo_message(update: Update, context: CallbackContext) -> None:
 	else:
 		try:
 			if players[curr_user].is_recipient_angel is True:
-				angel_chat_id = players[curr_user].angel.chat_id
+				angel_chat_id = players[players[curr_user].angel].chat_id
 				if angel_chat_id is None:
 					update.message.reply_text(messages.BOT_NOT_STARTED)
 					logger.warning(f'{curr_user} tried to contact their angel but their angel has not started this bot')
@@ -206,7 +206,7 @@ def forward_photo_message(update: Update, context: CallbackContext) -> None:
 					context.bot.send_photo(chat_id=angel_chat_id, photo=image_id)
 			
 			if players[curr_user].is_recipient_angel is False:
-				mortal_chat_id = players[curr_user].mortal.chat_id
+				mortal_chat_id = players[players[curr_user].mortal].chat_id
 				if mortal_chat_id is None:
 					update.message.reply_text(messages.BOT_NOT_STARTED)
 					logger.warning(f'{curr_user} tried to contact their mortal but their mortal has not started this bot')
