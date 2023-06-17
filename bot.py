@@ -79,7 +79,7 @@ def reveal_mortal(update: Update, context: CallbackContext):
         callback_query_id=update.callback_query.id, 
     )
 
-    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal), parse_mode=parse_mode)
+    update.callback_query.message.edit_text(text=messages.format_mortal_reveal(mortal))
 
 #TODO: Update help command
 def help_command(update: Update, context: CallbackContext) -> None:

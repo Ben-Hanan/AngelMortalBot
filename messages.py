@@ -36,4 +36,4 @@ def format_help_message():
     return HELP_MESSAGE + COMMAND + LIMITATIONS + ASSISTANCE
 
 def format_mortal_reveal(mortal):
-    return f'Your mortal is ||@{mortal.username} from {mortal.vg}||\!\n\n' + f'Please do your best to take care of ||@{mortal.username}|| and ensure that they feel loved during the duration of this game\!' + ' \u2764'
+    return f'Your mortal is @{mortal.username} from {mortal.vg}\!\n\n' + f'Please do your best to take care of @{mortal.username} and ensure that they feel loved during the duration of this game\!' + ' \u2764'
