@@ -110,7 +110,6 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 					context.bot.send_message(
 						text=messages.format_mortal_message(update.message.text),
 						chat_id=angel_chat_id,
-						parse_mode = parse_mode
 					)
 			
 			if players[curr_user].is_recipient_angel is False:
@@ -123,7 +122,6 @@ def forward_message(update: Update, context: CallbackContext) -> None:
 					context.bot.send_message(
 						text=messages.format_angel_message(update.message.text),
 						chat_id=mortal_chat_id,
-						parse_mode = parse_mode
 					)
 		except Exception as e:
 			logger.error(f'{curr_user} failed to send a message')
